@@ -1,0 +1,35 @@
+name: Build and Push Images
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - "src/**"
+    workflow_dispatch:
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    build-and-push:
+        strategy:
+            matrix:
+                service: [catalog, cart, orders, checkout, ui]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+
+            - uses: aws-actions/configure-aws-credentials@v6.2.4
+              with:
+                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                  aws-region: ${{ secrets.AWS_REGION_ID }}
+
+            - uses: aws-actions/amazon-ecr-login@v2
+              id: ecr-login
+
+            - name: Build and push
+              run: |
+                  IMAGE_TAG=${{ github.sha }}
+                  docker build -t ${{ steps.ecr-login.outputs.registry }}/retail-store/${{ matrix.service }}:$IMAGE_TAG ./src/${{ matrix.service }}
+                  docker push ${{ steps.ecr-login.outputs.registry }}/retail-store/${{ matrix.service }}:$IMAGE_TAG
