@@ -9,7 +9,7 @@ RUN ./mvnw dependency:go-offline -B
 COPY ./src ./src
 RUN ./mvnw package -DskipTests
 
-# Runtime stage **
+# Runtime stage
 FROM eclipse-temurin:21-jre-alpine
 LABEL org.opencontainers.image.source="https://github.com/yaboulhouda/retail-store-sample-app"
 LABEL org.opencontainers.image.title="cart"

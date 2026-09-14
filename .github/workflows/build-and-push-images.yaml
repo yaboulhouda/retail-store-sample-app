@@ -33,3 +33,10 @@ jobs:
                   IMAGE_TAG=${{ github.sha }}
                   docker build -t ${{ steps.ecr-login.outputs.registry }}/retail-store/${{ matrix.service }}:$IMAGE_TAG ./src/${{ matrix.service }}
                   docker push ${{ steps.ecr-login.outputs.registry }}/retail-store/${{ matrix.service }}:$IMAGE_TAG
+            - name: Run Trivy scan
+              uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+              with:
+                  image-ref: ${{ steps.ecr-login.outputs.registry }}/retail-store/${{ matrix.service }}:${{ github.sha }}
+                  format: "table"
+                  severity: "CRITICAL,HIGH"
+              continue-on-error: true
