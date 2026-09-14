@@ -1,0 +1,31 @@
+name: Promote Release
+
+on:
+    push:
+        tags:
+            - "v*"
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    promote:
+        strategy:
+            matrix:
+                service: [catalog, cart, orders, checkout, ui]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: aws-actions/configure-aws-credentials@v6.2.4
+              with:
+                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                  aws-region: ${{ secrets.AWS_REGION_ID }}
+            - uses: aws-actions/amazon-ecr-login@v2
+              id: ecr-login
+            - name: Retag existing image with version
+              run: |
+                  REGISTRY=${{ steps.ecr-login.outputs.registry }}
+                  VERSION=${GITHUB_REF_NAME}
+                  docker buildx imagetools create \
+                    -t $REGISTRY/retail-store/${{ matrix.service }}:$VERSION \
+                    $REGISTRY/retail-store/${{ matrix.service }}:${{ github.sha }}
