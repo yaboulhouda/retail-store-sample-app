@@ -7,12 +7,12 @@ import (
 
 	"github.com/aws-containers/retail-store-sample-app/catalog/config"
 	"github.com/aws-containers/retail-store-sample-app/catalog/model"
+	mysqldriver "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/plugin/opentelemetry/tracing"
 )
-
 type Database struct {
 	DB *gorm.DB
 }
@@ -25,18 +25,19 @@ type CatalogRepository interface {
 }
 
 func createMySQLDatabase(config config.DatabaseConfiguration) (*gorm.DB, error) {
-	cfg := mysql.Config{
-    User:                 config.User,
-    Passwd:                config.Password,
-    Net:                   "tcp",
-    Addr:                  config.Endpoint,
-    DBName:                config.Name,
-    Timeout:               time.Duration(config.ConnectTimeout) * time.Second,
-    Params: map[string]string{
-        "charset":   "utf8mb4",
-        "parseTime": "True",
-        "loc":       "Local",
-    	},
+
+	cfg := mysqldriver.Config{
+		User:      config.User,
+		Passwd:    config.Password,
+		Net:       "tcp",
+		Addr:      config.Endpoint,
+		DBName:    config.Name,
+		Timeout:   time.Duration(config.ConnectTimeout) * time.Second,
+		Params: map[string]string{
+			"charset":   "utf8mb4",
+			"parseTime": "True",
+			"loc":       "Local",
+		},
 	}
 	connectionString := cfg.FormatDSN()
 
