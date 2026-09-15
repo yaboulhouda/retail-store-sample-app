@@ -27,12 +27,13 @@ type CatalogRepository interface {
 func createMySQLDatabase(config config.DatabaseConfiguration) (*gorm.DB, error) {
 
 	cfg := mysqldriver.Config{
-		User:      config.User,
-		Passwd:    config.Password,
-		Net:       "tcp",
-		Addr:      config.Endpoint,
-		DBName:    config.Name,
-		Timeout:   time.Duration(config.ConnectTimeout) * time.Second,
+		User:                 config.User,
+		Passwd:               config.Password,
+		Net:                  "tcp",
+		Addr:                 config.Endpoint,
+		DBName:               config.Name,
+		Timeout:              time.Duration(config.ConnectTimeout) * time.Second,
+		AllowNativePasswords: true,
 		Params: map[string]string{
 			"charset":   "utf8mb4",
 			"parseTime": "True",
