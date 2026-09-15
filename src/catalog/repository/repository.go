@@ -41,7 +41,7 @@ func createMySQLDatabase(config config.DatabaseConfiguration) (*gorm.DB, error) 
 		},
 	}
 	connectionString := cfg.FormatDSN()
-
+	fmt.Printf("DEBUG DSN: %s\n", connectionString)
 	var db *gorm.DB
 	var err error
 
