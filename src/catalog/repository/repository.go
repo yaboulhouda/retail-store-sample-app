@@ -25,7 +25,20 @@ type CatalogRepository interface {
 }
 
 func createMySQLDatabase(config config.DatabaseConfiguration) (*gorm.DB, error) {
-	connectionString := fmt.Sprintf("%s:%s@tcp(%s)/%s?timeout=%ds&charset=utf8mb4&parseTime=True&loc=Local", config.User, config.Password, config.Endpoint, config.Name, config.ConnectTimeout)
+	cfg := mysql.Config{
+    User:                 config.User,
+    Passwd:                config.Password,
+    Net:                   "tcp",
+    Addr:                  config.Endpoint,
+    DBName:                config.Name,
+    Timeout:               time.Duration(config.ConnectTimeout) * time.Second,
+    Params: map[string]string{
+        "charset":   "utf8mb4",
+        "parseTime": "True",
+        "loc":       "Local",
+    	},
+	}
+	connectionString := cfg.FormatDSN()
 
 	var db *gorm.DB
 	var err error
