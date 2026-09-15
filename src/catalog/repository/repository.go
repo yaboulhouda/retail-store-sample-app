@@ -40,6 +40,7 @@ func createMySQLDatabase(config config.DatabaseConfiguration) (*gorm.DB, error) 
 			"loc":       "Local",
 		},
 	}
+	fmt.Printf("DEBUG RAW PASSWORD: %q (len=%d)\n", config.Password, len(config.Password))
 	connectionString := cfg.FormatDSN()
 	fmt.Printf("DEBUG DSN: %s\n", connectionString)
 	var db *gorm.DB
